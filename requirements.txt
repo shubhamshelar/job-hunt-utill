@@ -1,0 +1,2 @@
+csvkit==2.2.0
+python-jobspy==1.1.82
