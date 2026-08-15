@@ -46,7 +46,21 @@ import config
 
 DETAIL_WORKERS = 6
 DETAIL_TIMEOUT = 5
+# Guest API login-walls on sustained bursts (~2+ req/s got walled after ~30
+# requests in testing; ~1 req/s recovered 100%). Throttle globally to ~1.1/s.
+DETAIL_MIN_INTERVAL = 0.9
 LINKEDIN_SEARCH_URL = "https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?"
+
+_rate_lock = threading.Lock()
+_rate_last = [0.0]
+
+
+def _throttle():
+    with _rate_lock:
+        wait = DETAIL_MIN_INTERVAL - (time.time() - _rate_last[0])
+        if wait > 0:
+            time.sleep(wait)
+        _rate_last[0] = time.time()
 
 # Raw CSV schema (jobspy-compatible; enrich/filter_unseen depend on it)
 RAW_COLUMNS = [
@@ -96,6 +110,22 @@ def load_seen_urls():
         return set()
     try:
         return set(pd.read_csv(path)["job_url"].dropna())
+    except Exception:
+        return set()
+
+
+def load_undescribed_urls():
+    """job_urls whose catalog description is still empty (fetch was
+    login-walled) — these are retried on every scrape."""
+    path = get_project_root() / "data" / "catalog.csv"
+    if not path.exists():
+        return set()
+    try:
+        cat = pd.read_csv(path, usecols=["job_url", "description"])
+        empty = cat["description"].isna() | (
+            cat["description"].astype(str).str.strip() == ""
+        )
+        return set(cat.loc[empty, "job_url"])
     except Exception:
         return set()
 
@@ -206,6 +236,7 @@ def fetch_linkedin_detail(job_url):
     (login-wall, timeout, ...). Mirrors jobspy's own output formats.
     """
     try:
+        _throttle()
         response = _thread_session().get(job_url, timeout=DETAIL_TIMEOUT)
         response.raise_for_status()
         if "linkedin.com/signup" in response.url:
@@ -251,13 +282,15 @@ def fetch_linkedin_detail(job_url):
 
 def fetch_details_parallel(job_urls):
     """
-    Fetch LinkedIn detail pages concurrently. Returns {job_url: {field: value}}.
+    Fetch LinkedIn detail pages concurrently (globally rate-limited), then
+    retry login-walled misses once after a cooldown. Returns
+    {job_url: {field: value}}.
     """
     details = {}
     if not job_urls:
         return details
-    print(f"\n  Fetching details for {len(job_urls)} unseen LinkedIn job(s) "
-          f"({DETAIL_WORKERS} workers) ...")
+    print(f"\n  Fetching details for {len(job_urls)} LinkedIn job(s) "
+          f"({DETAIL_WORKERS} workers, ~1 req/s) ...")
     with ThreadPoolExecutor(max_workers=DETAIL_WORKERS) as executor:
         futures = {executor.submit(fetch_linkedin_detail, url): url for url in job_urls}
         done = 0
@@ -266,6 +299,20 @@ def fetch_details_parallel(job_urls):
             details[futures[future]] = future.result()
             if done % 20 == 0 or done == len(job_urls):
                 print(f"  {done}/{len(job_urls)} fetched")
+
+    missed = [u for u in job_urls if not (details.get(u) or {}).get("description")]
+    if missed:
+        print(f"  {len(missed)} without description (login-wall?) — "
+              f"retrying after 20s cooldown ...")
+        time.sleep(20)
+        recovered = 0
+        for i, url in enumerate(missed, 1):
+            result = fetch_linkedin_detail(url)
+            if result.get("description"):
+                details[url] = result
+                recovered += 1
+            if i % 25 == 0 or i == len(missed):
+                print(f"  retry {i}/{len(missed)}  ({recovered} recovered)")
     return details
 
 
@@ -382,12 +429,16 @@ def scrape_all(hours_old):
             print(f"✓ Removed {dropped} jobs with no date_posted")
         df = df.sort_values("date_posted", ascending=False)
 
-    # Fetch LinkedIn detail pages: only unseen URLs (seen ones already have
-    # their description backfilled in the catalog by enrich_jobs.py)
+    # Fetch LinkedIn detail pages: unseen URLs plus seen ones whose catalog
+    # description is still empty (previous fetches were login-walled)
     if "linkedin" in sites and len(df):
         li_mask = df["site"] == "linkedin"
         seen = load_seen_urls()
-        need = df.loc[li_mask & ~df["job_url"].isin(seen), "job_url"].unique()
+        undescribed = load_undescribed_urls()
+        need_mask = li_mask & (
+            ~df["job_url"].isin(seen) | df["job_url"].isin(undescribed)
+        )
+        need = df.loc[need_mask, "job_url"].unique()
         details = fetch_details_parallel(list(need))
         if details:
             for col in ("description", "job_url_direct", "emails",
