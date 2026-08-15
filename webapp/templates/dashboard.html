@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-value" id="stat-new">—</div><div class="stat-label">New jobs</div></div>
+  <div class="stat-card"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Total in catalog</div></div>
+  <div class="stat-card"><div class="stat-value" id="stat-sites">—</div><div class="stat-label">Sites covered</div></div>
+  <div class="stat-card"><div class="stat-value" id="stat-file">—</div><div class="stat-label">Latest output</div></div>
+</div>
+<p class="config-line" id="config-line">Loading search config…</p>
+<section>
+  <h2>Top companies</h2>
+  <div id="top-companies" class="list-rows"></div>
+</section>
+<section>
+  <h2>Top technologies</h2>
+  <div id="top-techs" class="chip-row"></div>
+</section>
+{% endblock %}

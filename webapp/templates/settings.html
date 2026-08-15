@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block content %}
+<div id="settings-save-msg" class="meta-line save-ok hidden"></div>
+
+<section>
+  <h2>Search config</h2>
+  <p class="config-line">Changes apply to the next scrape. Edited via this screen or directly in config.py.</p>
+
+  <div class="settings-block">
+    <h3>Search titles</h3>
+    <div id="titles-list" class="settings-items"></div>
+    <div class="settings-add">
+      <input id="titles-input" placeholder="Add title…">
+      <button id="titles-add" class="btn btn-small">Add</button>
+    </div>
+  </div>
+
+  <div class="settings-block">
+    <h3>Locations</h3>
+    <div id="locations-list" class="settings-items"></div>
+    <div class="settings-add">
+      <input id="locations-input" placeholder="Add location…">
+      <button id="locations-add" class="btn btn-small">Add</button>
+    </div>
+  </div>
+
+  <div class="settings-block">
+    <h3>Sites</h3>
+    <div id="sites-list" class="settings-items"></div>
+    <div class="settings-add">
+      <select id="sites-input"></select>
+      <button id="sites-add" class="btn btn-small">Add</button>
+    </div>
+  </div>
+
+  <div class="settings-block">
+    <h3>Results per search</h3>
+    <input id="results-input" type="number" min="1" max="100">
+  </div>
+
+  <button id="btn-save-config" class="btn btn-primary">Save config</button>
+</section>
+
+<section>
+  <h2>Cleanup</h2>
+  <p class="config-line">
+    Delete scraped posts older than N weeks (raw + output CSVs), purge the seen log to the
+    remaining window (purged jobs can reappear as NEW), and rebuild the catalog.
+  </p>
+  <div class="settings-add">
+    <input id="clean-weeks" type="number" min="1" max="52" placeholder="weeks (1–52)">
+    <button id="btn-clean" class="btn" disabled>Clean posts older than N weeks</button>
+  </div>
+</section>
+{% endblock %}

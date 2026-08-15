@@ -20,9 +20,9 @@ LOCATIONS = [
     "Hyderabad, India",
 ]
 
-# Sites to scrape (linkedin, indeed, zip_recruiter, google)
+# Sites to scrape (linkedin, indeed, google)
 # Note: Glassdoor is automatically removed (no India support)
-SITES = ["linkedin", "indeed", "zip_recruiter", "google"]
+SITES = ["linkedin", "indeed", "google"]
 
 # Number of results to fetch per title/location combination
 RESULTS_PER_SEARCH = 20

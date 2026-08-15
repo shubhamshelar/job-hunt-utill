@@ -53,6 +53,9 @@ def scrape_all(hours_old):
     # Remove Glassdoor silently (no India support)
     if "glassdoor" in sites:
         sites.remove("glassdoor")
+    # ZipRecruiter removed entirely (403s, zero results in history)
+    if "zip_recruiter" in sites:
+        sites.remove("zip_recruiter")
 
     all_jobs = []
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
@@ -83,6 +86,9 @@ def scrape_all(hours_old):
                     results_wanted=results_per_search,
                     hours_old=hours_old,
                     country_indeed="India",
+                    # 1 extra GET per LinkedIn job (~5s timeout each); silently
+                    # None when LinkedIn login-walls the request
+                    linkedin_fetch_description=True,
                     verbose=0,
                 )
                 step_time = format_elapsed(time.time() - step_start)

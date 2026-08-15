@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Tech{% endblock %}
+{% block content %}
+<div class="filter-bar">
+  <select id="t-sort">
+    <option value="recent" selected>Sort: recent postings</option>
+    <option value="jobs">Sort: most jobs</option>
+    <option value="new">Sort: most new jobs</option>
+  </select>
+</div>
+<div id="tech-meta" class="meta-line"></div>
+<div id="tech-list" class="list-rows"></div>
+{% endblock %}
