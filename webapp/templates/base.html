@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Job Hunt — {% block title %}Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body data-page="{{ page }}">
+  <header class="topbar">
+    <a class="brand" href="/">Job Hunt</a>
+    <nav>
+      <a href="/" data-nav="dashboard">Dashboard</a>
+      <a href="/jobs" data-nav="jobs">Jobs</a>
+      <a href="/companies" data-nav="companies">Companies</a>
+      <a href="/tech" data-nav="tech">Tech</a>
+      <a href="/settings" data-nav="settings">Settings</a>
+    </nav>
+    <div class="run-controls">
+      <button id="btn-enrich" class="btn">Enrich</button>
+      <button id="btn-scrape24" class="btn btn-primary">Scrape 24h</button>
+      <button id="btn-scrape7d" class="btn">Scrape 7d</button>
+      <span id="status-pill" class="pill">…</span>
+      <button id="btn-log" class="btn">Log</button>
+    </div>
+  </header>
+
+  <div id="log-drawer" class="log-drawer hidden">
+    <div class="log-head">
+      <span id="log-title">Run log</span>
+      <button id="btn-log-close" class="btn btn-small">×</button>
+    </div>
+    <pre id="log-body"></pre>
+  </div>
+
+  <div id="catalog-banner" class="banner hidden">
+    No catalog yet — click <b>Enrich</b> to build it from scrape history, or run a scrape.
+  </div>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <div id="modal-root"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

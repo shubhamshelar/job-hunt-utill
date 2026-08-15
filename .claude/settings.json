@@ -1,0 +1,64 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Bash(pwd)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(diff *)",
+
+      "Bash(git status)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+
+      "Bash(mkdir -p *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+
+      "Bash(python *)",
+      "Bash(python3 *)",
+      "Bash(pip *)",
+
+      "Bash(java *)",
+      "Bash(javac *)",
+      "Bash(./gradlew *)",
+      "Bash(gradle *)",
+      "Bash(mvn *)",
+
+      "Bash(docker ps *)",
+      "Bash(docker images *)",
+      "Bash(docker logs *)",
+
+      "Bash(curl -s *)",
+
+      "Bash(chmod +x scripts/*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(rm -r *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -fd *)",
+      "Bash(git push --force *)",
+      "Bash(git push *)",
+      "Bash(sudo *)",
+      "Bash(kill *)",
+      "Bash(shutdown *)",
+      "Bash(reboot *)",
+      "Bash(docker system prune *)"
+    ]
+  }
+}

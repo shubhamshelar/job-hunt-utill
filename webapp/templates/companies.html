@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Companies{% endblock %}
+{% block content %}
+<div class="filter-bar">
+  <select id="c-sort">
+    <option value="recent" selected>Sort: recent postings</option>
+    <option value="relevance">Sort: closest to my searches</option>
+    <option value="jobs">Sort: most postings</option>
+    <option value="new">Sort: most new jobs</option>
+  </select>
+</div>
+<div id="companies-meta" class="meta-line"></div>
+<div id="companies-list" class="list-rows"></div>
+{% endblock %}

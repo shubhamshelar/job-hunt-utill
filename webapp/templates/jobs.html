@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Jobs{% endblock %}
+{% block content %}
+<div class="filter-bar">
+  <select id="f-search-title" multiple size="3" title="Search title"><option value="">— title —</option></select>
+  <select id="f-location" multiple size="3" title="Location"><option value="">— location —</option></select>
+  <select id="f-site" multiple size="3" title="Site"><option value="">— site —</option></select>
+  <select id="f-experience" multiple size="3" title="Experience"><option value="">— level —</option></select>
+  <select id="f-tech" multiple size="3" title="Technology"><option value="">— tech —</option></select>
+  <input id="f-company" list="company-list" placeholder="Company…">
+  <datalist id="company-list"></datalist>
+  <input id="f-q" placeholder="Search text…">
+  <label class="check"><input type="checkbox" id="f-remote"> Remote only</label>
+  <label class="check"><input type="checkbox" id="f-new"> New only</label>
+  <input id="f-date-from" type="date" title="From">
+  <input id="f-date-to" type="date" title="To">
+  <select id="f-sort">
+    <option value="date_posted">Posted</option>
+    <option value="company_relevance">Relevance</option>
+    <option value="company">Company</option>
+    <option value="title">Title</option>
+    <option value="first_seen">First seen</option>
+  </select>
+  <button id="f-order" class="btn btn-small" title="Toggle sort order">↓</button>
+  <button id="f-reset" class="btn btn-small">Reset</button>
+</div>
+<div id="jobs-meta" class="meta-line"></div>
+<div id="jobs-list" class="list-rows"></div>
+<button id="jobs-more" class="btn load-more hidden">Load more</button>
+{% endblock %}
