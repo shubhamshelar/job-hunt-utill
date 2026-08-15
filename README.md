@@ -89,7 +89,7 @@ data/
 ## Notes
 
 - Glassdoor (no India support) and ZipRecruiter (persistent blocks) are excluded from scraping
-- LinkedIn descriptions are fetched per posting — makes LinkedIn scrapes slower, and they stay empty when LinkedIn login-walls the request
+- LinkedIn is scraped directly from its guest jobs API — one combined search per city (capped at `RESULTS_PER_SEARCH × number of titles`), so pagination reaches postings that per-title searches miss. Descriptions, direct apply links, and company details are fetched in parallel only for jobs you haven't seen; descriptions stay empty when LinkedIn login-walls the request
 - Jobs without a posting date are dropped; duplicate URLs are removed
 
 ## Requirements
@@ -97,6 +97,13 @@ data/
 - Python 3.12
 - conda (recommended) or pip
 - See `requirements.txt` for dependencies
+
+# TODO
+
+create issues 
+1) improving ranking of jobs by including user profiile from ui 
+2) use playright mcp /cli and test ui and find gaps and create detailed issue (this is issue to create more issues)
+3) work on infra to bundle it better and host it in future possibly , accounting end user usability, also database may be required for each use so create plan in that direction, we will check scope later on.
 
 ## License
 
