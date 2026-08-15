@@ -182,7 +182,8 @@ def enrich():
 
     catalog_cols = [
         "job_url", "id", "site", "title", "company", "location", "date_posted",
-        "search_title", "search_location", "is_remote", "job_type", "emails",
+        "search_title", "search_location", "is_remote", "job_type",
+        "job_url_direct", "emails",
         "company_industry", "company_url", "company_num_employees",
         "company_size_bucket", "description", "tech_stack", "experience_level",
         "experience_years",
@@ -253,6 +254,19 @@ def enrich():
     first["description"] = first["description"].where(
         first["description"].notna() & (first["description"].astype(str).str.strip() != ""),
         first["job_url"].map(latest_desc),
+    )
+
+    # Same latest-known backfill for the direct apply URL (LinkedIn rows
+    # scraped before the parallel detail fetch)
+    has_direct = allrows["job_url_direct"].notna() & (allrows["job_url_direct"].astype(str).str.strip() != "")
+    latest_direct = (
+        allrows[has_direct]
+        .drop_duplicates(subset=["job_url"], keep="last")
+        .set_index("job_url")["job_url_direct"]
+    )
+    first["job_url_direct"] = first["job_url_direct"].where(
+        first["job_url_direct"].notna() & (first["job_url_direct"].astype(str).str.strip() != ""),
+        first["job_url"].map(latest_direct),
     )
 
     # ── Company x search_title adjacency ──
